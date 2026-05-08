@@ -116,10 +116,10 @@ namespace RestoreMonarchy.PlayerStats
 
         public void LoadDefaults()
         {
-            MessageColor = "yellow";
-            MessageIconUrl = "https://i.imgur.com/TWjBtCA.png";
+            MessageColor = "#5E794D";
+            MessageIconUrl = "";
 
-            DatabaseProvider = "json";
+            DatabaseProvider = "mysql"; 
             JsonFilePath = "{rocket_directory}/Plugins/PlayerStats/PlayerStats.json";
             MySQLConnectionString = "Server=127.0.0.1;Port=3306;Database=unturned;Uid=root;Pwd=passw;";
             PlayerStatsTableName = "PlayerStats";
@@ -142,8 +142,8 @@ namespace RestoreMonarchy.PlayerStats
             StatsMode = Models.StatsMode.Both.ToString();
             ShowCombinedDeaths = true;
 
-            MinimumRankingTreshold = 25;
-            EnableRewards = true;
+            MinimumRankingTreshold = 5;
+            EnableRewards = false;
             Rewards = [
                 new Reward
                 {

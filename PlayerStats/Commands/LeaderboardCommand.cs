@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace RestoreMonarchy.PlayerStats.Commands
 {
-    public class RankingCommand : IRocketCommand
+    public class LeaderboardCommand : IRocketCommand
     {
         private PlayerStatsPlugin pluginInstance => PlayerStatsPlugin.Instance;
         private PlayerStatsConfiguration configuration => pluginInstance.Configuration.Instance;
@@ -14,43 +14,37 @@ namespace RestoreMonarchy.PlayerStats.Commands
         public void Execute(IRocketPlayer caller, string[] command)
         {
             int amount = 5;
-            if (command.Length > 0 && caller is ConsolePlayer)
-            {
-                int.TryParse(command[0], out amount);
-            }
-
             ThreadHelper.RunAsynchronously(() =>
             {
                 List<PlayerRanking> playerRankings = pluginInstance.Database.GetPlayerRankings(amount).Where(x => !x.IsUnranked()).ToList();
-                amount = playerRankings.Count;
                 ThreadHelper.RunSynchronously(() =>
                 {
                     if (playerRankings.Count == 0)
                     {
-                        pluginInstance.SendMessageToPlayer(caller, "NoRankingPlayersFound");
+                        pluginInstance.SendMessageToPlayer(caller, "NoLeaderboardPlayersFound");
                         return;
                     }
 
                     if (configuration.ActualStatsMode == StatsMode.Both || configuration.ActualStatsMode == StatsMode.PVP)
                     {
-                        pluginInstance.SendMessageToPlayer(caller, "RankingListHeaderPVP", amount);
+                        pluginInstance.SendMessageToPlayer(caller, "LeaderboardListHeaderPVP", amount);
                         foreach (PlayerRanking playerRanking in playerRankings)
                         {
                             string rank = playerRanking.Rank.ToString();
                             string name = playerRanking.Name;
                             string kills = playerRanking.Kills.ToString("N0");
-                            pluginInstance.SendMessageToPlayer(caller, "RankingListItemPVP", rank, name, kills);
+                            pluginInstance.SendMessageToPlayer(caller, "LeaderboardListItemPVP", rank, name, kills);
                         }
                     }
                     else
                     {
-                        pluginInstance.SendMessageToPlayer(caller, "RankingListHeaderPVE", amount);
+                        pluginInstance.SendMessageToPlayer(caller, "LeaderboardListHeaderPVE", amount);
                         foreach (PlayerRanking playerRanking in playerRankings)
                         {
                             string rank = playerRanking.Rank.ToString();
                             string name = playerRanking.Name;
                             string zombies = playerRanking.Zombies.ToString("N0");
-                            pluginInstance.SendMessageToPlayer(caller, "RankingListItemPVE", rank, name, zombies);
+                            pluginInstance.SendMessageToPlayer(caller, "LeaderboardListItemPVE", rank, name, zombies);
                         }
                     }
                 });
@@ -59,13 +53,13 @@ namespace RestoreMonarchy.PlayerStats.Commands
 
         public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
-        public string Name => "ranking";
+        public string Name => "leaderboard";
 
         public string Help => "";
 
         public string Syntax => "";
 
-        public List<string> Aliases => [];
+        public List<string> Aliases => ["lb"];
 
         public List<string> Permissions => [];
     }

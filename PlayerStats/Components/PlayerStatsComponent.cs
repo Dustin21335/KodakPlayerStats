@@ -195,6 +195,8 @@ namespace RestoreMonarchy.PlayerStats.Components
                 PlayerStatsComponent killerComponent = killer.GetComponent<PlayerStatsComponent>();
                 if (killerComponent != null)
                 {
+                    PlayerRanking playerRanking = pluginInstance.Database.GetPlayerRanking(killerComponent.SteamId);
+                    bool wasUnranked = playerRanking.IsUnranked();
                     killerComponent.PlayerData.Kills++;
                     killerComponent.SessionPlayerData.Kills++;
                     if (limb == ELimb.SKULL)
@@ -204,10 +206,20 @@ namespace RestoreMonarchy.PlayerStats.Components
                     }
                     killerComponent.UpdateUIEffect();
                     killerComponent.CheckGiveReward();
-
+                    if (wasUnranked)
+                    {
+                        playerRanking = pluginInstance.Database.GetPlayerRanking(killerComponent.SteamId);
+                        if (!playerRanking.IsUnranked()) pluginInstance.SendMessageToPlayer(null, "PlayerRankMinimumAchieved", UnturnedPlayer.FromPlayer(killerComponent.Player).DisplayName ?? "Unknown", configuration.MinimumRankingTreshold.ToString(), playerRanking.Rank);
+                    }
                     killerComponent.CheckAutomaticBan();
                 }
                 UpdateUIEffect();
+                PlayerStatsData playerStatsData = killerComponent.PlayerData;
+                string kdr = playerStatsData.Deaths == 0 ? playerStatsData.Kills.ToString("N0") : ((decimal)playerStatsData.Kills / playerStatsData.Deaths).ToString("N3");
+                ThreadHelper.RunSynchronously(() =>
+                {
+                    pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(killer), "PlayerKillNewKDR", UnturnedPlayer.FromPlayer(Player).DisplayName ?? "Unknown", kdr);
+                }, 0.1f);
             } else
             {
                 PlayerData.PVEDeaths++;

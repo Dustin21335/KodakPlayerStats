@@ -20,7 +20,7 @@ namespace RestoreMonarchy.PlayerStats.Components
             }
 
             isOpen = true;
-            EffectManager.sendUIEffect(configuration.UIEffectId, Key, TransportConnection, true);
+            EffectManager.SendUIEffect(Assets.find(EAssetType.EFFECT, configuration.UIEffectId) as EffectAsset, Key, TransportConnection, true);
 
             // Use different translations based on UI mode
             if (configuration.ActualStatsMode == StatsMode.Both || configuration.ActualStatsMode == StatsMode.PVP)
