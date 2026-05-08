@@ -267,25 +267,28 @@ namespace RestoreMonarchy.PlayerStats
             if (component == null)
             {
                 component = player.Player.gameObject.AddComponent<PlayerStatsComponent>();
-
-                if (Configuration.Instance.EnableJoinLeaveMessages)
+                if (!Configuration.Instance.EnableJoinMessages) return;
+                UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromPlayer(component.Player);
+                if (Configuration.Instance.DisableAdminJoinMessages && unturnedPlayer != null && unturnedPlayer.IsAdmin)
                 {
-                    ThreadHelper.RunAsynchronously(() =>
-                    {
-                        PlayerRanking playerRanking = Database.GetPlayerRanking(component.SteamId);
-                        ThreadHelper.RunSynchronously(() =>
-                        {
-                            if (playerRanking == null || playerRanking.IsUnranked())
-                            {
-                                SendMessageToPlayer(null, "JoinMessageNoRank", player.CharacterName);
-                            }
-                            else
-                            {
-                                SendMessageToPlayer(null, "JoinMessage", playerRanking.Rank.ToString("N0"), player.CharacterName);
-                            }
-                        });
-                    });
+                    Logger.Log($"Ignoring join for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                    return;
                 }
+                ThreadHelper.RunAsynchronously(() =>
+                {
+                    PlayerRanking playerRanking = Database.GetPlayerRanking(component.SteamId);
+                    ThreadHelper.RunSynchronously(() =>
+                    {
+                        if (playerRanking == null || playerRanking.IsUnranked())
+                        {
+                            SendMessageToPlayer(null, "JoinMessageNoRank", player.CharacterName);
+                        }
+                        else
+                        {
+                            SendMessageToPlayer(null, "JoinMessage", playerRanking.Rank.ToString("N0"), player.CharacterName);
+                        }
+                    });
+                });
             }
         }
 
@@ -306,25 +309,28 @@ namespace RestoreMonarchy.PlayerStats
                         Database.AddOrUpdatePlayer(component.PlayerData);
                     });
                 }
-
-                if (Configuration.Instance.EnableJoinLeaveMessages)
+                if (!Configuration.Instance.EnableLeaveMessages) return;
+                UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromPlayer(component.Player);
+                if (Configuration.Instance.DisableAdminLeaveMessages && unturnedPlayer != null && unturnedPlayer.IsAdmin)
                 {
-                    ThreadHelper.RunAsynchronously(() =>
-                    {
-                        PlayerRanking playerRanking = Database.GetPlayerRanking(component.SteamId);
-                        ThreadHelper.RunSynchronously(() =>
-                        {
-                            if (playerRanking == null || playerRanking.IsUnranked())
-                            {
-                                SendMessageToPlayer(null, "LeaveMessageNoRank", player.CharacterName);
-                            }
-                            else
-                            {
-                                SendMessageToPlayer(null, "LeaveMessage", playerRanking.Rank, player.CharacterName);
-                            }
-                        });
-                    });
+                    Logger.Log($"Ignoring leave for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                    return;
                 }
+                ThreadHelper.RunAsynchronously(() =>
+                {
+                    PlayerRanking playerRanking = Database.GetPlayerRanking(component.SteamId);
+                    ThreadHelper.RunSynchronously(() =>
+                    {
+                        if (playerRanking == null || playerRanking.IsUnranked())
+                        {
+                            SendMessageToPlayer(null, "LeaveMessageNoRank", player.CharacterName);
+                        }
+                        else
+                        {
+                            SendMessageToPlayer(null, "LeaveMessage", playerRanking.Rank, player.CharacterName);
+                        }
+                    });
+                });
             }
         }
 

@@ -218,7 +218,8 @@ namespace RestoreMonarchy.PlayerStats.Components
                 string kdr = playerStatsData.Deaths == 0 ? playerStatsData.Kills.ToString("N0") : ((decimal)playerStatsData.Kills / playerStatsData.Deaths).ToString("N3");
                 ThreadHelper.RunSynchronously(() =>
                 {
-                    pluginInstance.SendMessageToPlayer(UnturnedPlayer.FromPlayer(killer), "PlayerKillNewKDR", UnturnedPlayer.FromPlayer(Player).DisplayName ?? "Unknown", kdr);
+                    UnturnedPlayer unturnedPlayerKiller = UnturnedPlayer.FromPlayer(killer);
+                    if (unturnedPlayerKiller != null) pluginInstance.SendMessageToPlayer(unturnedPlayerKiller, "PlayerKillNewKDR", UnturnedPlayer.FromPlayer(Player).DisplayName ?? "Unknown", kdr);
                 }, 0.1f);
             } else
             {

@@ -22,7 +22,10 @@ namespace RestoreMonarchy.PlayerStats
         public bool ShowUIEffectByDefault { get; set; }
 
         // Feature Toggles
-        public bool EnableJoinLeaveMessages { get; set; }
+        public bool EnableJoinMessages { get; set; }
+        public bool EnableLeaveMessages { get; set; }
+        public bool DisableAdminJoinMessages { get; set; }
+        public bool DisableAdminLeaveMessages { get; set; }
 
         // Legacy Stats Settings
         public bool EnablePVPStats { get; set; }
@@ -129,7 +132,10 @@ namespace RestoreMonarchy.PlayerStats
             UIEffectId = 22512;
             ShowUIEffectByDefault = true;
 
-            EnableJoinLeaveMessages = true;
+            EnableJoinMessages = true;
+            EnableLeaveMessages = true;
+            DisableAdminJoinMessages = true;
+            DisableAdminLeaveMessages = true;
 
             // Legacy defaults
             EnablePVPStats = true;
