@@ -4,6 +4,7 @@ using RestoreMonarchy.PlayerStats.Helpers;
 using RestoreMonarchy.PlayerStats.Models;
 using Rocket.API;
 using Rocket.API.Collections;
+using Rocket.Core;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
@@ -269,10 +270,19 @@ namespace RestoreMonarchy.PlayerStats
                 component = player.Player.gameObject.AddComponent<PlayerStatsComponent>();
                 if (!Configuration.Instance.EnableJoinMessages) return;
                 UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromPlayer(component.Player);
-                if (Configuration.Instance.DisableAdminJoinMessages && unturnedPlayer != null && unturnedPlayer.IsAdmin)
+                if (unturnedPlayer != null)
                 {
-                    Logger.Log($"Ignoring join for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
-                    return;
+                    if (Configuration.Instance.DisableAdminJoinMessages && unturnedPlayer.IsAdmin)
+                    {
+                        Logger.Log($"Ignoring join for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                        return;
+                    }
+                    string disableJoinMessagesPermission = Configuration.Instance.DisableJoinMessagesPermission;
+                    if (!string.IsNullOrEmpty(disableJoinMessagesPermission) && R.Permissions.HasPermission(unturnedPlayer, disableJoinMessagesPermission))
+                    {
+                        Logger.Log($"Ignoring join for player: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                        return;
+                    }
                 }
                 ThreadHelper.RunAsynchronously(() =>
                 {
@@ -311,10 +321,19 @@ namespace RestoreMonarchy.PlayerStats
                 }
                 if (!Configuration.Instance.EnableLeaveMessages) return;
                 UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromPlayer(component.Player);
-                if (Configuration.Instance.DisableAdminLeaveMessages && unturnedPlayer != null && unturnedPlayer.IsAdmin)
+                if (unturnedPlayer != null)
                 {
-                    Logger.Log($"Ignoring leave for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
-                    return;
+                    if (Configuration.Instance.DisableAdminLeaveMessages && unturnedPlayer.IsAdmin)
+                    {
+                        Logger.Log($"Ignoring leave for admin: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                        return;
+                    }
+                    string disableLeaveMessagesPermission = Configuration.Instance.DisableLeaveMessagesPermission;
+                    if (!string.IsNullOrEmpty(disableLeaveMessagesPermission) && R.Permissions.HasPermission(unturnedPlayer, disableLeaveMessagesPermission))
+                    {
+                        Logger.Log($"Ignoring join for player: {unturnedPlayer.DisplayName ?? "Unknown"}");
+                        return;
+                    }
                 }
                 ThreadHelper.RunAsynchronously(() =>
                 {

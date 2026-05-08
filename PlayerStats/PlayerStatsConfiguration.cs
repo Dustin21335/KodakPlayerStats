@@ -26,6 +26,8 @@ namespace RestoreMonarchy.PlayerStats
         public bool EnableLeaveMessages { get; set; }
         public bool DisableAdminJoinMessages { get; set; }
         public bool DisableAdminLeaveMessages { get; set; }
+        public string DisableJoinMessagesPermission { get; set; }
+        public string DisableLeaveMessagesPermission { get; set; }
 
         // Legacy Stats Settings
         public bool EnablePVPStats { get; set; }
@@ -136,6 +138,9 @@ namespace RestoreMonarchy.PlayerStats
             EnableLeaveMessages = true;
             DisableAdminJoinMessages = true;
             DisableAdminLeaveMessages = true;
+
+            DisableJoinMessagesPermission = "PlayerStats.DisableJoinMessages";
+            DisableLeaveMessagesPermission = "PlayerStats.DisableLeaveMessages";
 
             // Legacy defaults
             EnablePVPStats = true;
